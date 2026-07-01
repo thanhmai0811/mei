@@ -55,5 +55,41 @@ void basic(char key) {
       Serial.print(key);
   }
 }
-  
+void passwords(char key) {
+if(key) {
+  if (key == '#') {
+    if (reset == password) {
+      Serial.println("mat khau chinh xac");
+  }
+    else {
+     Serial.println("mat khau khong chinh xac")
+  }
+    reset = "";
+  }
+  else {
+    reset += key;
+    Serial.print(key);
+  }
+}
+}
+void giuphim (char key) {
+  if ((int)keypad.getState() ==  PRESSED) {
+    if (temp != 0) {
+      key = temp;
+    }
+  }
+  if ((int)keypad.getState() ==  HOLD) {
+    state++;
+    state = constrain(state, 1, n-1);
+    delay(holdDelay);
+  }
+ 
+  if ((int)keypad.getState() ==  RELEASED) {
+    key += state;
+    state = 0;
+    //Xuất lên Máy tính để xem kết quả
+    Serial.println(key);
+ 
+  }
+  delay(100);
 }
