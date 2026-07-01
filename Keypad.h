@@ -41,7 +41,19 @@ if(key)  { //kiểm tra xem phím đã ddocjw nhấn hay chưa
     Serial.print(key);
   }
 }
-
-
+//============================================================================
+//bổ sung thêm một tí hàm
+void basic(char key) {
+  if(key) {
+   if (key == '#') {
+     Serial.println(reset);
+     reset = "";
+   }
+  }
+    else {
+      reset += key;
+      Serial.print(key);
+  }
+}
   
 }
