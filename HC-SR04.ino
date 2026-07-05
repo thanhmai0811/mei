@@ -36,7 +36,7 @@ pulseIn(pin, value, timeout);
 => Nếu đặt value là HIGH, hàm pulseIn() sẽ đợi đến khi tín hiệu đạt mức HIGH, khởi động bộ đếm thời gian. Khi tín hiệu nhảy xuống LOW, bộ đếm thời gian dừng lại. và ngược lại
 => Nếu tín hiệu luôn ở một mức HIGH/LOW cố định thì sau khoảng thời gian timeout, hàm pulseIn() sẽ dừng bộ đếm thời gian và trả về giá trị 0.
   timeout được tính bằng đơn vị micro giây. Giá trị mặc định của timeout là 60.106 tương ứng với 1 phút.
-  Giá trị tối đa là 180.106 tương ứng với 3 phút. timeout có kiểu dữ liệu là unsigned long
+  Giá trị tối đa là 180.106 tương ứng với 3 phút. timeout có kiểu dữ liệu là unsigned long 
 */
   distance = duration * 0.034 / 2;  //tính quảng đường đi; Tốc độ của âm thanh trong không khí là 340 m/s 
 
