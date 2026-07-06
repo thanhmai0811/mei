@@ -3,7 +3,7 @@
  * Board: Arduino Uno
  * Kết nối: VCC→5V, GND→GND, SIG→Pin2
  *
- * Mặc định (không hàn pad): Momentary, Active HIGH
+ * Mặc định (không hàn pad): Momentary, Active HIGH 
  * SIG = HIGH khi chạm, LOW khi không chạm
  */
 
