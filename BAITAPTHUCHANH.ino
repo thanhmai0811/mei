@@ -1,3 +1,4 @@
+//===============================================BAI1==================================================//
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -84,3 +85,62 @@ void loop() {
   
   turnon(percent);
 }
+//==============================================================BAI2========================================//
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+long duration;
+int distance;
+int led[] = {2,3,4,5,6,7,8,9};
+int echo = 11;
+int trig = 10;
+LiquidCrystal_I2C lcd(0x20,16,2);
+
+void setup() {
+  Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
+
+  pinMode (echo,INPUT);
+  digitalWrite(echo,LOW);
+  pinMode (trig,OUTPUT);
+  for (int i=0; i<8;i++) {
+    pinMode(led[i],OUTPUT);
+    digitalWrite(led[i],LOW);
+  }
+}
+void loop() {
+  digitalWrite(trig,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig,LOW);
+
+  duration = pulseIn(echo,HIGH);
+  distance = 0.034*(duration/2);
+  lcd.setCursor(1,0);
+  lcd.print ("distance: ");
+  lcd.setCursor(11,0);
+  lcd.print (distance);
+  Serial.println(distance);
+
+  int count;
+
+
+  if (distance >= 20) {
+    count = (distance/10) -1;
+    if (count > 8) count = 8;
+    for (int i =0; i<count;i++) {
+      digitalWrite(led[i],HIGH);
+    }
+    for (int a = 7; a >= count; a--) {
+      digitalWrite(led[a],LOW);
+    }
+  count = 0;
+  }
+  else {
+    for (int i =0; i<8;i++) {
+      digitalWrite(led[i],LOW);}
+  }
+  delay(1000);
+}
+//=================================================bai3======================================================//
