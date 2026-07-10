@@ -144,3 +144,110 @@ void loop() {
   delay(1000);
 }
 //=================================================bai3======================================================//
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#define BUTTON_PIN 10
+#define DEBOUNCE_DELAY 30   // thời gian chống dội (ms)
+
+bool lastRawState = HIGH;       // trạng thái đọc thô lần trước
+bool stableState = HIGH;        // trạng thái đã xác nhận ổn định
+int count;
+unsigned long lastDebounceTime = 0;
+int led[] = {2,3,4,5,6,7,8,9};
+
+LiquidCrystal_I2C lcd(0x20,16,2);
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  for (int i =0; i<8;i++) {
+    pinMode(led[i],OUTPUT);
+    digitalWrite(led[i],LOW);
+  }
+  Serial.begin(9600);
+}
+
+bool kiemTraNutVuaNhan() {
+  bool raw = digitalRead(BUTTON_PIN);
+  bool result = false;
+
+  if (raw != lastRawState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > DEBOUNCE_DELAY) {
+    if (raw != stableState) {
+      stableState = raw;
+      if (stableState == LOW) {
+        result = true; 
+        count ++;
+      }
+    }
+  }
+
+  lastRawState = raw;
+  return result;
+}
+
+void loop() {
+  if (kiemTraNutVuaNhan()) {
+    int chuongtrinh = count%4;
+    lcd.setCursor(1,0);
+    lcd.print("So lan: ");
+    lcd.setCursor(9,0);
+    lcd.print(count);
+    Serial.println(chuongtrinh);
+    lcd.setCursor(1,1);
+    lcd.print("Chuong trinh: ");
+
+    for (int i=0; i<8;i++) {digitalWrite(led[i],LOW); } //reset lai led
+
+    if (chuongtrinh == 1) {
+      for (int i=0; i<8;i++) {
+        lcd.setCursor(14,1);
+        lcd.print("1");
+        digitalWrite(led[i],HIGH);
+        delay(200);
+      }
+    }
+    else if (chuongtrinh == 2) {
+        lcd.setCursor(14,1);
+        lcd.print("2");
+      for (int i = 0; i<8; i++) {
+        digitalWrite(led[7-i],HIGH);
+        delay(200);
+      }
+    }
+    else if (chuongtrinh == 4) {
+              lcd.setCursor(14,1);
+        lcd.print("4");
+      for (int i = 0; i < 5; i++) {
+        digitalWrite(led[3-i],HIGH);
+        digitalWrite(led[4+i],HIGH);
+        delay(200);
+      }
+    }
+    else if (chuongtrinh == 3) {
+              lcd.setCursor(14,1);
+        lcd.print("3");
+      for (int i = 0; i < 5; i++) {
+        digitalWrite(led[7-i],HIGH);
+        digitalWrite(led[i],HIGH);
+        delay(200);
+      }
+    }
+    else {
+              lcd.setCursor(14,1);
+        lcd.print("0");
+      for (int i=0; i<8;i++) {
+        digitalWrite(led[i],LOW);
+        delay(200);
+      }      
+    }
+  delay(500);
+  // các việc khác vẫn chạy song song bình thường, ví dụ:
+  // capNhatLED();
+  // doCamBien();
+  } }
