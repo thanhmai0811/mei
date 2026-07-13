@@ -67,8 +67,31 @@ void loop() {
   if (kiemTraNutVuaNhan()) {
     // logic xử lý khi nhấn nút ở đây
   }
+//==========================================================================================//
+// constants won't change. They're used here to set pin numbers:
+const int BUTTON_PIN = 7; // the number of the pushbutton pin
 
-  // các việc khác vẫn chạy song song bình thường, ví dụ:
-  // capNhatLED();
-  // doCamBien();
+// Variables will change:
+int lastState = HIGH; // the previous state from the input pin
+int currentState;    // the current reading from the input pin
+
+void setup() {
+  // initialize serial communication at 9600 bits per second:
+  Serial.begin(9600);
+  // initialize the pushbutton pin as an pull-up input
+  // the pull-up input pin will be HIGH when the switch is open and LOW when the switch is closed.
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+}
+
+void loop() {
+  // read the state of the switch/button:
+  currentState = digitalRead(BUTTON_PIN);
+
+  if(lastState == LOW && currentState == HIGH)
+    Serial.println("The state changed from LOW to HIGH");
+
+  // save the last state
+  lastState = currentState;
+}
+
 }
