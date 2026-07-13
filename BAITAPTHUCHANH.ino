@@ -251,3 +251,36 @@ void loop() {
   // capNhatLED();
   // doCamBien();
   } }
+//=======================================BAI7=================================//
+/*ài 7: Hệ thống thu thập thông tin về nhiệt độ và độ ẩm của đối tượng điều khiển bao 
+gồm: Arduino Uno, cảm biến DHT 11, mô đun 4 led 7 đoạn. Lắp mạch và lập trình 
+điều khiển hiển thị thông số thu thập nhiệt độ và độ ẩm theo qui tắc sau:  
++ Hiển thị luân phiên nhiệt độ, độ ẩm sau mỗi 5s  
++ Hiển thị nhiệt độ (số nguyên) tại led 7 đoạn số thứ 1 và thứ 2, hiển thị độ ẩm tương 
+đối (số nguyên phần trăm) tại led 7 đoạn số thứ 3 và thứ 4. */
+
+#include <DHT.h>
+#include <TM1637Display.h>
+
+#define DHTPIN 4
+#define DHTTYPE DHT11
+#define CLK 3
+#define DIO 2
+
+DHT dht(DHTPIN, DHTTYPE);
+TM1637Display display(CLK,DIO);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  display.setBrightness(0x0f);
+}
+void loop() {
+  delay(2000);
+
+  float humidity = dht.readHumidity();
+  display.showNumberDec(humidity,false,2,0);
+  float tempC = dht.readTemperature();
+  display.showNumberDec(tempC,false,2,2);
+
+}
