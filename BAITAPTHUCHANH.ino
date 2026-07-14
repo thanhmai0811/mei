@@ -284,3 +284,100 @@ void loop() {
   display.showNumberDec(tempC,false,2,2);
 
 }
+//==========================================  BAI10 =========================================================//
+#include <Wire.h>
+#include <TM1637Display.h>
+#include <LiquidCrystal_I2C.h>
+
+//7 SEGMENT LED_MODULE 7 LED
+#define CLK 3
+#define DIO 2
+TM1637Display display(CLK,DIO); 
+
+LiquidCrystal_I2C lcd(0x20,16,2); //LCD
+
+//button
+const int start = 6;
+const int in = 7;
+const int out = 8;
+int laststate1 = HIGH;
+int laststate2 = HIGH;
+int laststate3 = HIGH;
+int currentstate1,currentstate2,currentstate3;
+
+//millis()
+unsigned long previousmillis = 0;
+const long interval = 100;
+
+int effect;
+int count = 0;
+
+void setup() {
+  display.setBrightness(0x0f);
+  lcd.init();
+  lcd.backlight();
+
+  pinMode(start,INPUT_PULLUP);
+  pinMode(in,INPUT_PULLUP);
+  pinMode(out,INPUT_PULLUP);
+}
+
+void loop() {
+  currentstate1 = digitalRead(start);
+  currentstate2 = digitalRead(in);
+  currentstate3 = digitalRead(out);
+
+  if(laststate1 ==LOW && currentstate1 == HIGH) {
+    effect = 1;   
+  }
+  else if(laststate2 ==LOW && currentstate2 == HIGH) {
+    effect = 2;
+  }
+  else if(laststate3 ==LOW && currentstate3 == HIGH) {
+    effect = 3;  
+  }
+  laststate1 = currentstate1;
+  laststate2 = currentstate2;
+  laststate3 = currentstate3;
+  if(effect == 1) {
+    display.showNumberDec(0);
+    lcd.clear();
+    lcd.setCursor(1,1);
+    lcd.print("So nguoi: 0");
+    effect = 0;
+    delay(50);
+  }
+  else if (effect == 2) {
+    count++;
+    display.showNumberDec(count);
+
+    lcd.clear();
+    lcd.setCursor(1,0);
+    lcd.print("co nguoi vao");
+    lcd.setCursor(1,1);
+    lcd.print("so nguoi: ");
+    lcd.setCursor(11,0);
+    lcd.print(count);
+    effect = 0;
+    delay(50);
+  }
+  else if(effect == 3) {
+    count--;
+    lcd.clear();
+    if (count < 0) {
+      count = 0;
+      lcd.setCursor(1,0);
+      lcd.print("DA HE NGUOI");
+    } else {
+      lcd.setCursor(1,0);
+      lcd.print("co nguoi ra");
+    }
+    display.showNumberDec(count);
+    lcd.setCursor(1,1);
+    lcd.print("so nguoi: ");
+    lcd.setCursor(11,0);
+    lcd.print(count);
+    effect = 0;
+    delay(50);
+  }
+}
