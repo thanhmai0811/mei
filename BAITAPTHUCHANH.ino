@@ -518,3 +518,64 @@ void chayNgoai() {
     digitalWrite(ledPins[right], LOW);
   }
 }
+//=============================================== BAI 13 ===================================================
+/*Bài 13: Hệ thống điều khiển động cơ một chiều gồm các phần tử: Arduino Uno, mô 
+đun L298, biến trở, 2 nút nhấn, động cơ một chiều, nguồn 5V. Lắp mạch và lập trình 
+điều khiển động cơ một chiều theo qui tắc: 
++ Nhấn nút FORWARD → động cơ quay chiều thuận 
++ Nhấn nút BACK → động cơ quay chiều ngược 
++ Điều khiển tốc độ của đông cơ (cả hai chiều quay) bằng tín hiệu biến trở theo qui tắc 
+tốc độ tỉ lệ với giá trị biến trở. */
+int enb = 4;
+int in3 = 2;
+int in4 = 3;
+int forward = 6;
+int back = 5;
+int pot = A0;
+bool laststate1 = HIGH;
+bool laststate2 = HIGH;
+int motoreffect;
+void setup() {
+  pinMode(enb,OUTPUT);
+  pinMode(in3,OUTPUT);
+  pinMode(in4,OUTPUT);
+  pinMode(forward,INPUT_PULLUP);
+  pinMode(back,INPUT_PULLUP);
+  Serial.begin(9600);
+}
+void loop() {
+  int speed = map(analogRead(pot),0,1023,0,255);
+  bool currentstate1 = digitalRead(forward);
+  bool currentstate2 = digitalRead(back);
+
+  if (laststate1 == HIGH && currentstate1 == LOW) {
+    delay(30);
+    Serial.println("da nhan nut forward");
+    motoreffect = 1;
+  }
+  else if(laststate2 == HIGH && currentstate2 == LOW) {
+    delay(30);
+    Serial.println("da nhan nut back");
+    motoreffect = 2;
+  }
+
+  if(motoreffect == 1) {
+    analogWrite(enb,speed);
+    Serial.println("toc do:");
+    Serial.print(speed);
+    digitalWrite(in3,HIGH);
+    digitalWrite(in4,LOW);
+  }
+  else if(motoreffect == 2) {
+    analogWrite(enb,speed);
+    Serial.println("toc do:");
+    Serial.print(speed);
+    digitalWrite(in4,HIGH);
+    digitalWrite(in3,LOW);
+  } 
+
+  laststate1 = currentstate1;
+  laststate2 = currentstate2;
+  delay(100);
+}
+
