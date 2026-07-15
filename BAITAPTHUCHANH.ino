@@ -381,3 +381,140 @@ void loop() {
     delay(50);
   }
 }
+//=========================================== BAI 11 ==================================================
+/*Bài 11: Hệ thống điều khiển led trang trí từ máy tính gồm: Arduino Uno, mô đun 8 
+led đơn, LCD 16x02 I2C, máy tính PC. Lắp mạch và lập trình điều khiển hệ thống 
+Uno nhận lệnh từ máy tính với qui tắc. 
++ Gõ lệnh “xuoi” → mô đun led sáng từ led1 đến led8. 
++ Gõ lệnh “nguoc” → mô dun led láng từ led8 đến led1 
++ Gõ lệnh “giua” → mô đun led sáng từ giữa ra hai phía 
++ Gõ lệnh “ngoai” → mô đun led sáng từ phía ngoài vào trong. 
+Hiển thị trên LCD thông tin theo dạng: 
+Dòng 1: “PC to UNO: ___” (lệnh vừa gõ) 
+Dòng 2: “Module led: __” (1, 2, 3, 4, tương ứng với các lệnh đã gõ). */
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Khởi tạo LCD 16x02 với địa chỉ I2C thường là 0x27 hoặc 0x3F
+LiquidCrystal_I2C lcd(0x20, 16, 2);
+
+// Khai báo mảng chân điều khiển 8 LED từ 2 đến 9
+const int ledPins[] = {2, 3, 4, 5, 6, 7, 8, 9};
+const int numLeds = 8;
+
+void setup() {
+  // Khởi hạo Serial giao tiếp với máy tính
+  Serial.begin(9600);
+  
+  // Cấu hình các chân LED là OUTPUT
+  for (int i = 0; i < numLeds; i++) {
+    pinMode(ledPins[i], OUTPUT);
+    digitalWrite(ledPins[i], LOW); // Tắt hết LED ban đầu
+  }
+  
+  // Khởi tạo LCD
+  lcd.init();
+  lcd.backlight();
+  
+  // Hiển thị trạng thái ban đầu
+  lcd.setCursor(0, 0);
+  lcd.print("PC to UNO: ready");
+  lcd.setCursor(0, 1);
+  lcd.print("Module led: 0");
+}
+
+void loop() {
+  // Kiểm tra xem có dữ liệu từ máy tính gửi xuống không
+  if (Serial.available() > 0) {
+    String command = Serial.readString();
+    command.trim(); // Xóa các ký tự xuống dòng (\n, \r) hoặc khoảng trắng thừa
+    
+    if (command == "xuoi") {
+      updateLCD("xuoi", "1");
+      chayXuoi();
+    } 
+    else if (command == "nguoc") {
+      updateLCD("nguoc", "2");
+      chayNguoc();
+    } 
+    else if (command == "giua") {
+      updateLCD("giua", "3");
+      chayGiua();
+    } 
+    else if (command == "ngoai") {
+      updateLCD("ngoai", "4");
+      chayNgoai();
+    }
+  }
+}
+
+// Hàm cập nhật thông tin lên màn hình LCD
+void updateLCD(String cmd, String mode) {
+  // Xóa dòng 1 và in lệnh mới
+  lcd.setCursor(0, 0);
+  lcd.print("                "); // Xóa dòng cũ
+  lcd.setCursor(0, 0);
+  lcd.print("PC to UNO: " + cmd);
+  
+  // Xóa dòng 2 và in số tương ứng
+  lcd.setCursor(0, 1);
+  lcd.print("                "); // Xóa dòng cũ
+  lcd.setCursor(0, 1);
+  lcd.print("Module led: " + mode);
+}
+
+// Hàm tắt toàn bộ LED trước khi chạy hiệu ứng mới
+void tatHetLed() {
+  for (int i = 0; i < numLeds; i++) {
+    digitalWrite(ledPins[i], LOW);
+  }
+}
+
+// 1. Hiệu ứng sáng từ LED 1 đến LED 8
+void chayXuoi() {
+  tatHetLed();
+  for (int i = 0; i < numLeds; i++) {
+    digitalWrite(ledPins[i], HIGH);
+    delay(200);
+    digitalWrite(ledPins[i], LOW);
+  }
+}
+
+// 2. Hiệu ứng sáng từ LED 8 đến LED 1
+void chayNguoc() {
+  tatHetLed();
+  for (int i = numLeds - 1; i >= 0; i--) {
+    digitalWrite(ledPins[i], HIGH);
+    delay(200);
+    digitalWrite(ledPins[i], LOW);
+  }
+}
+
+// 3. Hiệu ứng sáng từ giữa ra hai phía (chân 5,4 -> 6,3 -> 7,2 -> 8,1)
+void chayGiua() {
+  tatHetLed();
+  // Giữa là cặp chân index 3 và 4 (tương ứng chân Arduino 5 và 6)
+  for (int i = 0; i < numLeds / 2; i++) {
+    int left = 3 - i;
+    int right = 4 + i;
+    digitalWrite(ledPins[left], HIGH);
+    digitalWrite(ledPins[right], HIGH);
+    delay(250);
+    digitalWrite(ledPins[left], LOW);
+    digitalWrite(ledPins[right], LOW);
+  }
+}
+
+// 4. Hiệu ứng sáng từ ngoài vào trong
+void chayNgoai() {
+  tatHetLed();
+  for (int i = 0; i < numLeds / 2; i++) {
+    int left = i;
+    int right = (numLeds - 1) - i;
+    digitalWrite(ledPins[left], HIGH);
+    digitalWrite(ledPins[right], HIGH);
+    delay(250);
+    digitalWrite(ledPins[left], LOW);
+    digitalWrite(ledPins[right], LOW);
+  }
+}
